@@ -19,7 +19,9 @@ public class FlightTrainTask {
     @Scheduled(cron = "0/10 * * * * ? ") // 间隔5秒执行
     public void taskCycle() {
         int i = userAddressService.deleteUserAddressByUserId();
-        System.out.println(i);
+        System.out.println("********************");
+        System.out.println("*数据库地址清除成功 *");
+        System.out.println("********************");
     }
 
 
