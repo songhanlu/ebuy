@@ -16,5 +16,7 @@ public interface UserAddressService {
     UserAddress queryAddressById(Integer Id);
     //按userId查询默认地址
     UserAddress findByUserIDDefault(Integer userId);
+    //根据用户ID真删除地址
+    public  Integer deleteUserAddressByUserId();
 
 }

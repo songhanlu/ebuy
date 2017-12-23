@@ -1,10 +1,13 @@
 package com.bdqn.ebuy.service.userAddress;
 
+import com.bdqn.ebuy.dao.user.UserMapper;
 import com.bdqn.ebuy.dao.userAddress.UserAddressMapper;
+import com.bdqn.ebuy.pojo.User;
 import com.bdqn.ebuy.pojo.UserAddress;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -14,6 +17,11 @@ import java.util.List;
 public class UserAddressServiceImpl implements UserAddressService {
     @Resource
     private UserAddressMapper userAddressMapper;
+    @Resource
+    private UserMapper userMapper;
+
+
+
     @Override
     public List<UserAddress> queryAll() {
         return userAddressMapper.queryAll();
@@ -47,5 +55,28 @@ public class UserAddressServiceImpl implements UserAddressService {
     @Override
     public UserAddress findByUserIDDefault(Integer userId) {
         return userAddressMapper.findByUserIDDefault(userId);
+    }
+
+    @Override
+    public Integer deleteUserAddressByUserId() {
+        List<UserAddress> userRessList= new ArrayList<>();
+        List<Integer> userIdList=new ArrayList<>();
+        List<Integer> deleteId=new ArrayList<>();
+        Integer count = 0;
+        userRessList= userAddressMapper.queryAll();
+        for (UserAddress address : userRessList) {
+            userIdList.add(address.getUserId());
+        }
+        for (Integer userId : userIdList) {
+            User userList = userMapper.detailUser(userId);
+            if (userList.getVisible()==0) {
+                deleteId.add(userId);
+            }
+        }
+        for (Integer integer : deleteId) {
+            count =  userAddressMapper.deleteAddressByuserId(integer);
+        }
+
+        return count;
     }
 }

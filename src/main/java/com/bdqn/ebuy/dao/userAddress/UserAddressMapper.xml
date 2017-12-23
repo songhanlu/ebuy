@@ -40,4 +40,7 @@
         WHERE userId=#{userId}
         and isDefault=1
     </select>
+    <delete id="deleteAddressByuserId" parameterType="Integer">
+        DELETE FROM easybuy_user_address WHERE userId=#{Userid}
+    </delete>
 </mapper>
