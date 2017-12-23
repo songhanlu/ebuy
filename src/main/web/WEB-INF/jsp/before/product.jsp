@@ -465,7 +465,7 @@
     <div class="content">
 
         <div id="tsShopContainer">
-            <div id="tsImgS"><a href="images/p_big.jpg" title="Images" class="MagicZoom" id="MagicZoom"><img src="images/p_big.jpg" width="390" height="390" /></a></div>
+            <div id="tsImgS"><a href="${pageContext.request.contextPath}/statics/upload/${product.fileName}" title="Images" class="MagicZoom" id="MagicZoom"><img src="${pageContext.request.contextPath}/statics/upload/${product.fileName}" width="390" height="390" /></a></div>
             <%--<div id="tsPicContainer">
                 <div id="tsImgSArrL" onclick="tsScrollArrLeft()"></div>
                 <div id="tsImgSCon">
