@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.bdqn.ebuy.dao.userAddress.UserAddressMapper">
+    <select id="queryAll" resultType="com.bdqn.ebuy.pojo.UserAddress">
+        SELECT * FROM easybuy_user_address WHERE visible = 1
+    </select>
+    <select id="queryAllByUserID" parameterType="integer" resultType="UserAddress">
+        SELECT * FROM easybuy_user_address WHERE visible = 1
+        and userId=#{userId}
+    </select>
+    <insert id="queryAdd" parameterType="UserAddress">
+        INSERT  INTO easybuy_user_address
+        VALUES (NULL ,
+        #{userId},
+        #{address},
+        NOW(),
+        0,
+        #{remark},
+       1)
+    </insert>
+    <update id="updateAddressByIdAndUserId" parameterType="UserAddress">
+        UPDATE `easybuy_user_address`
+        SET
+
+        `address` = #{address},
+
+        `isDefault` = #{isDefault},
+        `remark` = #{remark}
+
+        WHERE `id` = #{id};
+    </update>
+    <update id="deleteAddressById" parameterType="Integer">
+      UPDATE easybuy_user_address set visible=0 WHERE id=#{id}
+    </update>
+    <select id="queryAddressById" parameterType="Integer" resultType="UserAddress">
+        SELECT * FROM easybuy_user_address WHERE  id=#{Id}
+    </select>
+    <select id="findByUserIDDefault" parameterType="integer" resultType="UserAddress">
+        SELECT * from easybuy_user_address
+        WHERE userId=#{userId}
+        and isDefault=1
+    </select>
+</mapper>

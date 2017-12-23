@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bdqn.ebuy.dao.product.ProductMapper">
+    <select id="findProductByTypeID" parameterType="Product" resultType="Product">
+        SELECT *
+        FROM easybuy_product p
+        <where>
+            <if test="product.categoryLevel1Id !=null">
+                and categoryLevel1Id = #{product.categoryLevel1Id}
+            </if>
+            <if test="product.categoryLevel2Id !=null">
+                and categoryLevel2Id = #{product.categoryLevel2Id}
+            </if>
+            <if test="product.categoryLevel3Id !=null">
+                and categoryLevel3Id = #{product.categoryLevel3Id}
+            </if>
+        </where>
+
+    </select>
+    <select id="findProductByID" parameterType="integer" resultType="Product">
+        select * FROM  easybuy_product where id = #{id}
+    </select>
+
+    <select id="queryAllProduct" resultType="EasybuyProduct">
+        SELECT * FROM easybuy_product WHERE visible = 1
+    </select>
+    <update id="updateProduct" parameterType="Integer">
+        UPDATE easybuy_product
+        <trim prefix="set" suffixOverrides="," suffix="where id=#{id}">
+            <if test="categoryLevel1Id !=null">
+                categoryLevel1Id=#{categoryLevel1Id},
+            </if>
+            <if test="categoryLevel2Id !=null">
+                categoryLevel2Id=#{categoryLevel2Id},
+            </if>
+            <if test="categoryLevel3Id !=null">
+                categoryLevel3Id=#{categoryLevel3Id},
+            </if>
+            <if test="name !=null">
+                name=#{name},
+            </if>
+            <if test="fileName !=null">
+                fileName=#{fileName},
+            </if>
+            <if test="price !=null">
+                price=#{price},
+            </if>
+            <if test="stock !=null">
+                stock=#{stock},
+            </if>
+            <if test="description !=null">
+                description=#{description},
+            </if>
+        </trim>
+    </update>
+    <select id="queryAllProductBycategoryLeveId" parameterType="EasybuyProduct" resultType="EasybuyProduct">
+        SELECT * FROM easybuy_product
+        <where>
+            <if test="categoryLevel1Id!=null">
+                AND categoryLevel1Id = #{categoryLevel1Id}
+            </if>
+            <if test="categoryLevel2Id!=null">
+                AND categoryLevel2Id = #{categoryLevel2Id}
+            </if>
+            <if test="categoryLevel3Id!=null">
+                AND categoryLevel3Id = #{categoryLevel3Id}
+            </if>
+        </where>
+    </select>
+    <select id="countAllProduct" resultType="integer">
+        SELECT COUNT(1) FROM easybuy_product WHERE visible=1
+    </select>
+    <select id="queryProductBycategoryLevel1Id" parameterType="Integer" resultType="Product">
+        SELECT * FROM `easybuy_product` WHERE `categoryLevel1Id`=#{categoryLevel1Id}
+    </select>
+    <update id="deleteproduct" parameterType="Integer">
+        UPDATE easybuy_product SET visible = 0 WHERE id=#{id}
+    </update>
+    <insert id="queryAddProduct" parameterType="Product">
+        INSERT INTO easybuy_product
+        VALUES (null,
+        #{name} ,
+        #{description} ,
+        #{price} ,
+        #{stock} ,
+        #{categoryLevel1Id},
+        #{categoryLevel2Id},
+        #{categoryLevel3Id},
+        #{fileName},
+        0,
+        1,NULL)
+    </insert>
+    <select id="queryProductByName" parameterType="String" resultType="Product">
+        SELECT * FROM `easybuy_product` WHERE `name` LIKE CONCAT('%',#{name},'%')
+    </select>
+</mapper>

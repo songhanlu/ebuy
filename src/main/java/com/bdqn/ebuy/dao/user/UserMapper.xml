@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bdqn.ebuy.dao.user.UserMapper">
+    <!--增加-->
+    <insert id="addUser" parameterType="User">
+       INSERT INTO`easybuy_user`
+        VALUES
+       (NULL,#{loginName},#{userName},
+      #{password},#{sex},
+     #{identityCode},#{email},
+    #{mobile},#{type},#{visible})
+    </insert>
+    <!--假删除用修改语句-->
+    <update id="deleteUserById" parameterType="integer">
+           UPDATE easybuy_user SET visible=0 WHERE id=#{id}
+    </update>
+    <!--修改多条-->
+    <update id="updateUser" parameterType="User">
+        UPDATE `easybuy_user`SET
+        loginName=#{loginName}, userName=#{userName}, PASSWORD=#{password},sex=#{sex},
+        identityCode=#{identityCode}, email=#{email},mobile=#{mobile},
+        TYPE=#{type}
+        WHERE id=#{id}
+    </update>
+    <!--查一条-->
+    <select id="detailUser" parameterType="Integer" resultType="User">
+            SELECT * FROM `easybuy_user` WHERE id =#{id}
+    </select>
+    <!--查多条-->
+    <select id="queryAll" resultType="User">
+        SELECT * FROM easybuy_user
+        WHERE visible=1
+        ORDER  BY id DESC
+    </select>
+    <!--登录-->
+    <select id="login" resultType="User" parameterType="User">
+          SELECT * FROM `easybuy_user`
+          WHERE loginName=#{loginName} AND PASSWORD=#{password}
+          and type = 1
+    </select>
+    <!--按照登录姓名查询-->
+    <select id="queryUserByLoginName" resultType="User" parameterType="String">
+          SELECT * FROM `easybuy_user` WHERE loginName=#{loginName}
+    </select>
+    <!--求总计录数-->
+    <select id="queryCount" resultType="Integer" >
+         SELECT COUNT(1) FROM `easybuy_user` where visible=1
+    </select>
+    <select id="beforeLogin" resultType="User" parameterType="String">
+        select
+        *
+        from
+        `easybuy_user`
+        where `loginName` = #{loginName}
+        and `password` = #{password}
+        and visible = 1
+    </select>
+
+    <insert id="beforeRegister" parameterType="User">
+        INSERT INTO `easybuy_user`
+        (`loginName`,
+        `userName`,
+        `password`,
+        `sex`,
+        `identityCode`,
+        `email`,
+        `mobile`)
+        VALUES (#{loginName},
+        #{userName},
+        #{password},
+        #{sex},
+        #{identityCode},
+        #{email},
+        #{mobile});
+    </insert>
+</mapper>

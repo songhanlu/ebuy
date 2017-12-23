@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bdqn.ebuy.dao.order.OrderMapper">
+    <resultMap id="orderMap" type="Order">
+        <id property="id" column="id"/>
+        <collection property="orderDetail" resultMap="orderDetailMap"/>
+    </resultMap>
+    <resultMap id="orderDetailMap" type="OrderDetail">
+        <id property="id" column="od_id"/>
+        <association property="product" resultMap="productMap"/>
+        <association property="user" resultMap="userMap"/>
+    </resultMap>
+    <resultMap id="userMap" type="User">
+        <id property="id" column="u_id"/>
+    </resultMap>
+    <resultMap id="productMap" type="EasybuyProduct">
+        <id property="id" column="p_id"/>
+    </resultMap>
+
+    
+    <select id="queryAll" resultType="Order">
+        select * from `easybuy_order` WHERE visible = 1 order by createTime desc
+    </select>
+
+    <select id="queryAllBySerialNumber" resultType="Order" parameterType="String">
+        SELECT * FROM `easybuy_order` WHERE `serialNumber` = #{serialNumber} and visible = 1
+    </select>
+
+    <select id="queryAllByUserName" parameterType="String" resultType="Order">
+        select * from `easybuy_order` as o,`easybuy_user` as u where o.`userId` = u.`id` AND o.`visible` =1 and `userName` like concat('%',#{userName},'%')
+    </select>
+
+    <insert id="addOrder" parameterType="Order" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO `easybuy_order`
+        VALUES ( NULL,
+                #{userId},
+                #{loginName},
+                #{userAddress},
+                NOW(),
+                #{cost},
+                #{serialNumBer},
+                1);
+    </insert>
+
+    <update id="updateOrderUserAddress" parameterType="Order">
+        UPDATE `easybuy_order`
+        SET `userAddress` = #{userAddress}
+        WHERE `id` = #{id}
+    </update>
+
+    <update id="deleteUpdateOrder" parameterType="integer">
+        UPDATE `easybuy_order`
+        SET `visible` = 0
+        WHERE `id` = #{id}
+    </update>
+
+    <select id="queryOrderNameBySerialNumber" resultMap="orderMap" parameterType="String">
+        SELECT
+          p.`name`,
+          p.`fileName`,
+          od.`quantity`,
+          p.`price`
+        FROM
+          `easybuy_order` o,
+          `easybuy_order_detail` od,
+          `easybuy_product` p,
+          `easybuy_user` u
+        WHERE o.`id` = od.`orderId`
+          AND od.`productId` = p.`id`
+          AND o.`userId` = u.`id`
+          AND o.`serialNumber` = #{serialNumber}
+          and o.`visible`=1
+          order by createTime desc
+    </select>
+
+    <select id="queryAll_2" resultMap="orderMap">
+        SELECT
+          *, od.id as od_id, p.id as p_id, u.id as u_id
+        FROM
+          `easybuy_order` o,
+          `easybuy_order_detail` od,
+          `easybuy_product` p,
+          `easybuy_user` u
+        WHERE o.`id` = od.`orderId`
+        and od.productId = p.id
+        and u.id = o.userId
+        and o.`visible`=1
+        order by createTime desc
+    </select>
+    <select id="totalCount" resultType="integer">
+        SELECT count(1) FROM easybuy_order where visible=1
+    </select>
+    <select id="queryOrderByUserNameAndSerialNumber" resultMap="orderMap">
+        SELECT
+        *,
+        od.id AS od_id,
+        p.id AS p_id,
+        u.id AS u_id
+        FROM
+        `easybuy_order` o,
+        `easybuy_order_detail` od,
+        `easybuy_product` p,
+        `easybuy_user` u
+        WHERE o.`id` = od.`orderId`
+        AND od.productId = p.id
+        AND u.id = o.userId
+        AND o.`visible` =1
+        <choose>
+            <when test="loginName!=null and loginName!=''">
+                AND o.`loginName` like concat('%',#{loginName},'%')
+            </when>
+            <when test="serialNumber!=null and serialNumber!=''">
+                AND o.`serialNumber` = #{serialNumber}
+            </when>
+        </choose>
+
+        order by createTime desc
+    </select>
+    <select id="findOrderByID" resultType="Order" parameterType="integer">
+        SELECT * from easybuy_order
+        where id=#{id}
+    </select>
+</mapper>

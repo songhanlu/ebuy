@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bdqn.ebuy.dao.car.CarMapper">
+    <resultMap id="carMap" type="Car">
+        <id property="carID" column="carID"/>
+        <id property="carProductQuatity" column="carProductQuantity"/>
+        <association property="product" resultMap="productMap"/>
+    </resultMap>
+    <resultMap id="productMap" type="Product">
+        <id property="id" column="id"/>
+    </resultMap>
+
+    <insert id="addCar" parameterType="Car">
+        insert into car (carProductID, carProductQuantity, carUserID, sum)
+        VALUES (#{product.id},#{carProductQuatity},#{carUserID},#{sum})
+    </insert>
+    <select id="findAll" parameterType="integer" resultMap="carMap">
+        select *
+        from car c, easybuy_product p
+        where c.carProductID = p.id
+        and carUserID = #{userID}
+        order by c.carID
+    </select>
+    <update id="updateCar" parameterType="Car">
+        UPDATE car
+        set
+          carProductQuantity = #{carProductQuatity},
+          sum = #{sum}
+        where
+          carID = #{carID}
+    </update>
+    <select id="sumByUserID" parameterType="integer" resultType="integer">
+        select sum(`sum`)
+        from car
+        WHERE
+        carUserID = #{userID}
+    </select>
+    <delete id="deleteCarByID" parameterType="integer">
+        DELETE FROM car where carID = #{carID}
+    </delete>
+</mapper>

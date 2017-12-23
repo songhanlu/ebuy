@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bdqn.ebuy.dao.productCategory.ProductCategoryMapper">
+    <select id="findAllByType" parameterType="integer" resultType="ProductCategory">
+        select * from easybuy_product_category
+        where visible=1
+        and type = #{type}
+        ORDER BY id
+    </select>
+    <select id="findAllByParentID" parameterType="integer" resultType="ProductCategory">
+         select * from easybuy_product_category
+        where visible=1
+        and parentId = #{parentId}
+        ORDER BY id
+    </select>
+    <select id="findAll" resultType="ProductCategory">
+        SELECT * from easybuy_product_category where visible=1 order BY type
+    </select>
+    <select id="findByID" parameterType="integer" resultType="ProductCategory">
+        select * from easybuy_product_category
+        WHERE id = #{id}
+    </select>
+    <insert id="add" parameterType="ProductCategory">
+        INSERT into easybuy_product_category (name, parentId, type, visible)
+        VALUES (#{name},#{parentId},#{type},1)
+    </insert>
+    <select id="countByParentID" parameterType="integer" resultType="integer">
+        SELECT count(1) from easybuy_product_category
+        WHERE visible=1
+        and parentId=#{parentId}
+    </select>
+    <update id="del" parameterType="integer">
+        UPDATE easybuy_product_category set visible=0
+        where id=#{id}
+    </update>
+</mapper>
