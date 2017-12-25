@@ -427,7 +427,7 @@
 
         //修改商品分类
         $("#updateProductSelectL1").click(function () {
-            vy76
+            var parentID = $(this).val();
             $.post(
                 "${pageContext.request.contextPath}/after/changeProductType",
                 {"parentID":parentID},
