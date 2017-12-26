@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.bdqn.ebuy.pojo.*;
 import com.bdqn.ebuy.service.car.CarService;
 import com.bdqn.ebuy.service.news.NewsService;
+import com.bdqn.ebuy.service.order.OrderService;
 import com.bdqn.ebuy.service.product.ProductService;
 import com.bdqn.ebuy.service.productCategory.ProductCategoryService;
 import com.bdqn.ebuy.service.user.UserService;
@@ -43,9 +44,15 @@ public class BeforeUserController {
     private CarService carService;
     @Resource
     private UserAddressService userAddressService;
+    @Resource
+    private OrderService orderService;
 
     @RequestMapping("/center")
     private String center(HttpSession session, Model model){
+        User currentUser = (User) session.getAttribute(Comm.CUR_USER);
+        if(currentUser==null){
+            return "redirect:/login.html";
+        }
         return "before/user_center";
     }
 
@@ -248,5 +255,14 @@ public class BeforeUserController {
         transport.close();
         userService.updateUser(user);
         return JSON.toJSONString(Comm.fetchPassword());
+    }
+
+    @RequestMapping(value = "/order")
+    public String queryOrder(Integer pageNum,Integer pageSize,
+                             HttpSession session,Model model){
+        User currentUser = (User) session.getAttribute(Comm.CUR_USER);
+        PageInfo<Order> pageInfo = orderService.queryOrder(pageNum, pageSize, currentUser.getId());
+        model.addAttribute("pageInfo", pageInfo);
+        return "before/order";
     }
 }

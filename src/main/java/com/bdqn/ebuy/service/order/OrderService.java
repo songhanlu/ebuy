@@ -65,4 +65,5 @@ public interface OrderService {
     Integer updateStatus(Integer id, String status);
     Integer updateStatusBySerialNumber(@Param("serialNumber")String serialNumber,
                                        @Param("status")String status);
+    PageInfo<Order> queryOrder(Integer pageNum,Integer pageSize,Integer userId);
 }

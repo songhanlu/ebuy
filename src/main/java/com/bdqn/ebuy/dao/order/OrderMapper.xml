@@ -132,4 +132,20 @@
         SET status=#{status}
         where serialNumber=#{serialNumber}
     </update>
+    <select id="queryOrder" resultMap="orderMap" parameterType="Integer">
+
+        SELECT
+        *, od.id AS od_id, p.id AS p_id, u.id AS u_id
+        FROM
+        `easybuy_order` o,
+        `easybuy_order_detail` od,
+        `easybuy_product` p,
+        `easybuy_user` u
+        WHERE o.`id` = od.`orderId`
+        AND od.productId = p.id
+        AND u.id = o.userId
+        AND o.`visible`=1
+        AND o.`userId`=#{userId}
+        ORDER BY createTime DESC
+    </select>
 </mapper>

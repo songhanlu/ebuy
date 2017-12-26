@@ -104,5 +104,13 @@ public class OrderServiceImpl implements OrderService {
         return orderMapper.updateStatusBySerialNumber(serialNumber,status);
     }
 
+    @Override
+    public PageInfo<Order> queryOrder(Integer pageNum, Integer pageSize, Integer userId) {
+        PageHelper.startPage(pageNum, pageSize);
+        List<Order> list = orderMapper.queryOrder(userId);
+        PageInfo<Order> pageInfo = new PageInfo<>(list);
+        return pageInfo;
+    }
+
 
 }

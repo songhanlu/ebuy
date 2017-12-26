@@ -318,17 +318,23 @@
                                 <td><img src="${pageContext.request.contextPath}/statics/upload/${product.fileName}" alt="" height="50px" width="50px"></td>
                                 <td>${product.stock}</td>
                                 <td>${product.price}</td>
-                                <td>
+                                <%--<td>
                                         <c:if test="${product.visible == 1}">
                                             在销售
                                         </c:if>
                                         <c:if test="${product.visible == 0}">
                                             已下架
                                         </c:if>
-                                </td>
+                                </td>--%>
                                 <td align="center"><button class="btn btn-info" productID="${product.id}" name="showUpdateProduct">修改</button></td>
-                                <td align="center"><button class="btn btn-success" productID="${product.id}" name="showupdateVisible">上架</button></td>
-                                <td align="center"><button class="btn btn-danger" productID="${product.id}" name="showDeleteProduct" >下架</button></td>
+                                <%--<td align="center"><button class="btn btn-success" productID="${product.id}" name="showupdateVisible">上架</button></td>
+                                <td align="center"><button class="btn btn-danger" productID="${product.id}" name="showDeleteProduct" >下架</button></td>--%>
+                                <c:if test="${product.visible == 0}">
+                                    <td align="center"><button class="btn btn-success" productID="${product.id }" name="showupdateVisible">上架</button></td>
+                                </c:if>
+                                <c:if test="${product.visible == 1}">
+                                    <td align="center"><button class="btn btn-danger" productID="${product.id }" name="showDeleteProduct" >下架</button></td>
+                                </c:if>
                             </tr>
                         </c:forEach>
                     </table>
