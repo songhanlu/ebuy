@@ -1,0 +1,999 @@
+Index: src/main/java/com/bdqn/ebuy/controller/AfterCommonController.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/com/bdqn/ebuy/controller/AfterCommonController.java	(date 1514194640000)
++++ src/main/java/com/bdqn/ebuy/controller/AfterCommonController.java	(revision )
+@@ -67,7 +67,7 @@
+     }
+     @RequestMapping("/product.html")
+     public String showAfterProduct(){
+-        return "after/after_product";
++        return "after/after_product1";
+     }
+     @RequestMapping("/news.html")
+     public String showAfterNews(){
+Index: src/main/java/com/bdqn/ebuy/controller/AfterProductController.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/com/bdqn/ebuy/controller/AfterProductController.java	(date 1514194640000)
++++ src/main/java/com/bdqn/ebuy/controller/AfterProductController.java	(revision )
+@@ -211,4 +211,15 @@
+         }
+         return JSON.toJSONString(Comm.failed());
+     }
++
++    @ResponseBody
++    @RequestMapping(value = "/updateVisible",method = RequestMethod.POST,
++            produces = {"application/json;charset=UTF-8"})
++    public String updateVisible(Product product) {
++        int n = productService.updateVisible(product);
++        if (n > 0) {
++            return JSON.toJSONString(Comm.success());
++        }
++        return JSON.toJSONString(Comm.failed());
++    }
+ }
+Index: src/main/java/com/bdqn/ebuy/service/order/OrderService.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/com/bdqn/ebuy/service/order/OrderService.java	(date 1514194640000)
++++ src/main/java/com/bdqn/ebuy/service/order/OrderService.java	(revision )
+@@ -62,4 +62,7 @@
+     PageInfo<Order> queryAll_3(Integer pageNum, Integer pageSize,
+                                String loginName,String serialNumber);
+     Order findOrderByID(Integer id);
++    Integer updateStatus(Integer id, String status);
++    Integer updateStatusBySerialNumber(@Param("serialNumber")String serialNumber,
++                                       @Param("status")String status);
+ }
+Index: src/main/java/com/bdqn/ebuy/controller/AfterOrderController.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/com/bdqn/ebuy/controller/AfterOrderController.java	(date 1514194640000)
++++ src/main/java/com/bdqn/ebuy/controller/AfterOrderController.java	(revision )
+@@ -11,6 +11,7 @@
+ import org.springframework.web.bind.annotation.ResponseBody;
+ 
+ import javax.annotation.Resource;
++import java.io.UnsupportedEncodingException;
+ 
+ /**
+  * Created by hp on 2017/12/19.
+@@ -42,4 +43,14 @@
+         return "after/after_order";
+     }
+ 
++    @RequestMapping(value = "/updateOrderStatus",produces = {"application/json;charset=UTF-8"})
++    @ResponseBody
++    public String updateOrderStatus(Integer id, String status) throws UnsupportedEncodingException {
++        int result = orderService.updateStatus(id, new String(status.getBytes("ISO8859-1"), "UTF-8"));
++        if(result>0){
++            return JSON.toJSONString(Comm.success());
++        }
++        return JSON.toJSONString(Comm.failed());
++    }
++
+ }
+Index: src/main/java/com/bdqn/ebuy/dao/order/OrderMapper.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/com/bdqn/ebuy/dao/order/OrderMapper.xml	(date 1514194640000)
++++ src/main/java/com/bdqn/ebuy/dao/order/OrderMapper.xml	(revision )
+@@ -41,7 +41,7 @@
+                 NOW(),
+                 #{cost},
+                 #{serialNumBer},
+-                1);
++                1,#{status});
+     </insert>
+ 
+     <update id="updateOrderUserAddress" parameterType="Order">
+@@ -122,4 +122,14 @@
+         SELECT * from easybuy_order
+         where id=#{id}
+     </select>
++    <update id="updateStatus">
++        update `easybuy_order`
++        SET status = #{status}
++        WHERE id = #{id}
++    </update>
++    <update id="updateStatusBySerialNumber">
++        UPDATE easybuy_order
++        SET status=#{status}
++        where serialNumber=#{serialNumber}
++    </update>
+ </mapper>
+\ No newline at end of file
+Index: src/main/java/com/bdqn/ebuy/service/product/ProductService.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/com/bdqn/ebuy/service/product/ProductService.java	(date 1514194640000)
++++ src/main/java/com/bdqn/ebuy/service/product/ProductService.java	(revision )
+@@ -28,4 +28,5 @@
+      * @return
+      */
+     PageInfo<Product> queryProductByName(Integer pageNum,Integer pageSize,String name);
++    public Integer updateVisible(Product product);
+ }
+Index: .idea/dataSources/b246861e-f537-4288-a906-a6312f48258c.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- .idea/dataSources/b246861e-f537-4288-a906-a6312f48258c.xml	(date 1514194640000)
++++ .idea/dataSources/b246861e-f537-4288-a906-a6312f48258c.xml	(revision )
+@@ -50,439 +50,444 @@
+     <schema id="44" parent="1" name="u2project01"/>
+     <schema id="45" parent="1" name="u2web"/>
+     <schema id="46" parent="1" name="workorder"/>
+-    <table id="47" parent="2" name="car"/>
+-    <table id="48" parent="2" name="easybuy_news"/>
+-    <table id="49" parent="2" name="easybuy_order"/>
+-    <table id="50" parent="2" name="easybuy_order_detail"/>
+-    <table id="51" parent="2" name="easybuy_product"/>
+-    <table id="52" parent="2" name="easybuy_product_category"/>
+-    <table id="53" parent="2" name="easybuy_user"/>
+-    <table id="54" parent="2" name="easybuy_user_address"/>
+-    <table id="55" parent="2" name="result"/>
+-    <column id="56" parent="47" name="carID">
++    <schema id="47" parent="1" name="housedatabase"/>
++    <table id="48" parent="2" name="car"/>
++    <table id="49" parent="2" name="easybuy_news"/>
++    <table id="50" parent="2" name="easybuy_order"/>
++    <table id="51" parent="2" name="easybuy_order_detail"/>
++    <table id="52" parent="2" name="easybuy_product"/>
++    <table id="53" parent="2" name="easybuy_product_category"/>
++    <table id="54" parent="2" name="easybuy_user"/>
++    <table id="55" parent="2" name="easybuy_user_address"/>
++    <table id="56" parent="2" name="result"/>
++    <column id="57" parent="48" name="carID">
+       <Position>1</Position>
+       <DataType>int(11)|0</DataType>
+       <NotNull>1</NotNull>
+       <SequenceIdentity>1</SequenceIdentity>
+     </column>
+-    <column id="57" parent="47" name="carProductID">
++    <column id="58" parent="48" name="carProductID">
+       <Position>2</Position>
+       <DataType>int(11)|0</DataType>
+     </column>
+-    <column id="58" parent="47" name="carProductQuantity">
++    <column id="59" parent="48" name="carProductQuantity">
+       <Position>3</Position>
+       <DataType>int(11)|0</DataType>
+     </column>
+-    <column id="59" parent="47" name="carUserID">
++    <column id="60" parent="48" name="carUserID">
+       <Position>4</Position>
+       <DataType>int(11)|0</DataType>
+     </column>
+-    <column id="60" parent="47" name="sum">
++    <column id="61" parent="48" name="sum">
+       <Position>5</Position>
+       <DataType>int(11)|0</DataType>
+     </column>
+-    <key id="61" parent="47" name="PRIMARY">
++    <key id="62" parent="48" name="PRIMARY">
+       <NameSurrogate>1</NameSurrogate>
+       <ColNames>carID</ColNames>
+       <Primary>1</Primary>
+     </key>
+-    <column id="62" parent="48" name="id">
++    <column id="63" parent="49" name="id">
+       <Position>1</Position>
+       <Comment>主键</Comment>
+       <DataType>int(10)|0</DataType>
+       <NotNull>1</NotNull>
+       <SequenceIdentity>1</SequenceIdentity>
+     </column>
+-    <column id="63" parent="48" name="title">
++    <column id="64" parent="49" name="title">
+       <Position>2</Position>
+       <Comment>标题</Comment>
+       <DataType>varchar(40)|0</DataType>
+       <NotNull>1</NotNull>
+     </column>
+-    <column id="64" parent="48" name="content">
++    <column id="65" parent="49" name="content">
+       <Position>3</Position>
+       <Comment>内容</Comment>
+       <DataType>varchar(1000)|0</DataType>
+       <NotNull>1</NotNull>
+     </column>
+-    <column id="65" parent="48" name="createTime">
++    <column id="66" parent="49" name="createTime">
+       <Position>4</Position>
+       <Comment>创建时间</Comment>
+       <DataType>datetime|0</DataType>
+       <NotNull>1</NotNull>
+     </column>
+-    <column id="66" parent="48" name="visible">
++    <column id="67" parent="49" name="visible">
+       <Position>5</Position>
+       <DataType>int(1)|0</DataType>
+       <DefaultExpression>&apos;1&apos;</DefaultExpression>
+     </column>
+-    <index id="67" parent="48" name="PK__EASYBUY___C63B5EE724927208">
++    <index id="68" parent="49" name="PK__EASYBUY___C63B5EE724927208">
+       <ColNames>id</ColNames>
+       <Unique>1</Unique>
+     </index>
+-    <index id="68" parent="48" name="UQ__EASYBUY___C12AD09D276EDEB3">
++    <index id="69" parent="49" name="UQ__EASYBUY___C12AD09D276EDEB3">
+       <ColNames>title</ColNames>
+       <Unique>1</Unique>
+     </index>
+-    <key id="69" parent="48" name="PRIMARY">
++    <key id="70" parent="49" name="PRIMARY">
+       <NameSurrogate>1</NameSurrogate>
+       <ColNames>id</ColNames>
+       <Primary>1</Primary>
+     </key>
+-    <key id="70" parent="48" name="PK__EASYBUY___C63B5EE724927208">
++    <key id="71" parent="49" name="PK__EASYBUY___C63B5EE724927208">
+       <ColNames>id</ColNames>
+       <UnderlyingIndexName>PK__EASYBUY___C63B5EE724927208</UnderlyingIndexName>
+     </key>
+-    <key id="71" parent="48" name="UQ__EASYBUY___C12AD09D276EDEB3">
++    <key id="72" parent="49" name="UQ__EASYBUY___C12AD09D276EDEB3">
+       <ColNames>title</ColNames>
+       <UnderlyingIndexName>UQ__EASYBUY___C12AD09D276EDEB3</UnderlyingIndexName>
+     </key>
+-    <column id="72" parent="49" name="id">
++    <column id="73" parent="50" name="id">
+       <Position>1</Position>
+       <Comment>主键</Comment>
+       <DataType>int(11)|0</DataType>
+       <NotNull>1</NotNull>
+       <SequenceIdentity>1</SequenceIdentity>
+     </column>
+-    <column id="73" parent="49" name="userId">
++    <column id="74" parent="50" name="userId">
+       <Position>2</Position>
+       <Comment>用户主键</Comment>
+       <DataType>int(255)|0</DataType>
+     </column>
+-    <column id="74" parent="49" name="loginName">
++    <column id="75" parent="50" name="loginName">
+       <Position>3</Position>
+       <DataType>varchar(255)|0</DataType>
+     </column>
+-    <column id="75" parent="49" name="userAddress">
++    <column id="76" parent="50" name="userAddress">
+       <Position>4</Position>
+       <Comment>用户地址</Comment>
+       <DataType>varchar(255)|0</DataType>
+     </column>
+-    <column id="76" parent="49" name="createTime">
++    <column id="77" parent="50" name="createTime">
+       <Position>5</Position>
+       <Comment>创建时间</Comment>
+       <DataType>datetime|0</DataType>
+     </column>
+-    <column id="77" parent="49" name="cost">
++    <column id="78" parent="50" name="cost">
+       <Position>6</Position>
+       <Comment>总消费</Comment>
+       <DataType>float|0</DataType>
+     </column>
+-    <column id="78" parent="49" name="serialNumber">
++    <column id="79" parent="50" name="serialNumber">
+       <Position>7</Position>
+       <Comment>订单号</Comment>
+       <DataType>varchar(255)|0</DataType>
+     </column>
+-    <column id="79" parent="49" name="visible">
++    <column id="80" parent="50" name="visible">
+       <Position>8</Position>
+       <DataType>int(1)|0</DataType>
+       <DefaultExpression>&apos;1&apos;</DefaultExpression>
+     </column>
+-    <key id="80" parent="49" name="PRIMARY">
++    <column id="81" parent="50" name="status">
++      <Position>9</Position>
++      <DataType>varchar(20)|0</DataType>
++    </column>
++    <key id="82" parent="50" name="PRIMARY">
+       <NameSurrogate>1</NameSurrogate>
+       <ColNames>id</ColNames>
+       <Primary>1</Primary>
+     </key>
+-    <column id="81" parent="50" name="id">
++    <column id="83" parent="51" name="id">
+       <Position>1</Position>
+       <Comment>主键</Comment>
+       <DataType>int(10)|0</DataType>
+       <NotNull>1</NotNull>
+       <SequenceIdentity>1</SequenceIdentity>
+     </column>
+-    <column id="82" parent="50" name="orderId">
++    <column id="84" parent="51" name="orderId">
+       <Position>2</Position>
+       <Comment>订单主键</Comment>
+       <DataType>int(10)|0</DataType>
+       <NotNull>1</NotNull>
+     </column>
+-    <column id="83" parent="50" name="productId">
++    <column id="85" parent="51" name="productId">
+       <Position>3</Position>
+       <Comment>商品主键</Comment>
+       <DataType>int(10)|0</DataType>
+       <NotNull>1</NotNull>
+     </column>
+-    <column id="84" parent="50" name="quantity">
++    <column id="86" parent="51" name="quantity">
+       <Position>4</Position>
+       <Comment>数量</Comment>
+       <DataType>int(10)|0</DataType>
+       <NotNull>1</NotNull>
+     </column>
+-    <column id="85" parent="50" name="cost">
++    <column id="87" parent="51" name="cost">
+       <Position>5</Position>
+       <Comment>消费</Comment>
+       <DataType>float|0</DataType>
+       <NotNull>1</NotNull>
+     </column>
+-    <column id="86" parent="50" name="visible">
++    <column id="88" parent="51" name="visible">
+       <Position>6</Position>
+       <DataType>int(11)|0</DataType>
+       <DefaultExpression>&apos;1&apos;</DefaultExpression>
+     </column>
+-    <index id="87" parent="50" name="PK__EASYBUY___66E1BD8E2F10007B">
++    <index id="89" parent="51" name="PK__EASYBUY___66E1BD8E2F10007B">
+       <ColNames>id</ColNames>
+       <Unique>1</Unique>
+     </index>
+-    <key id="88" parent="50" name="PRIMARY">
++    <key id="90" parent="51" name="PRIMARY">
+       <NameSurrogate>1</NameSurrogate>
+       <ColNames>id</ColNames>
+       <Primary>1</Primary>
+     </key>
+-    <key id="89" parent="50" name="PK__EASYBUY___66E1BD8E2F10007B">
++    <key id="91" parent="51" name="PK__EASYBUY___66E1BD8E2F10007B">
+       <ColNames>id</ColNames>
+       <UnderlyingIndexName>PK__EASYBUY___66E1BD8E2F10007B</UnderlyingIndexName>
+     </key>
+-    <column id="90" parent="51" name="id">
++    <column id="92" parent="52" name="id">
+       <Position>1</Position>
+       <Comment>主键</Comment>
+       <DataType>int(10)|0</DataType>
+       <NotNull>1</NotNull>
+       <SequenceIdentity>1</SequenceIdentity>
+     </column>
+-    <column id="91" parent="51" name="name">
++    <column id="93" parent="52" name="name">
+       <Position>2</Position>
+       <Comment>名称</Comment>
+       <DataType>varchar(20)|0</DataType>
+       <NotNull>1</NotNull>
+     </column>
+-    <column id="92" parent="51" name="description">
++    <column id="94" parent="52" name="description">
+       <Position>3</Position>
+       <Comment>描述</Comment>
+       <DataType>varchar(1024)|0</DataType>
+     </column>
+-    <column id="93" parent="51" name="price">
++    <column id="95" parent="52" name="price">
+       <Position>4</Position>
+       <Comment>价格</Comment>
+       <DataType>float|0</DataType>
+       <NotNull>1</NotNull>
+     </column>
+-    <column id="94" parent="51" name="stock">
++    <column id="96" parent="52" name="stock">
+       <Position>5</Position>
+       <Comment>库存</Comment>
+       <DataType>int(10)|0</DataType>
+       <NotNull>1</NotNull>
+     </column>
+-    <column id="95" parent="51" name="categoryLevel1Id">
++    <column id="97" parent="52" name="categoryLevel1Id">
+       <Position>6</Position>
+       <Comment>分类1</Comment>
+       <DataType>int(10)|0</DataType>
+     </column>
+-    <column id="96" parent="51" name="categoryLevel2Id">
++    <column id="98" parent="52" name="categoryLevel2Id">
+       <Position>7</Position>
+       <Comment>分类2</Comment>
+       <DataType>int(10)|0</DataType>
+     </column>
+-    <column id="97" parent="51" name="categoryLevel3Id">
++    <column id="99" parent="52" name="categoryLevel3Id">
+       <Position>8</Position>
+       <Comment>分类3</Comment>
+       <DataType>int(10)|0</DataType>
+     </column>
+-    <column id="98" parent="51" name="fileName">
++    <column id="100" parent="52" name="fileName">
+       <Position>9</Position>
+       <Comment>文件名称</Comment>
+       <DataType>varchar(200)|0</DataType>
+     </column>
+-    <column id="99" parent="51" name="isDelete">
++    <column id="101" parent="52" name="isDelete">
+       <Position>10</Position>
+       <Comment>是否删除(1：删除 0：未删除)</Comment>
+       <DataType>int(1)|0</DataType>
+       <DefaultExpression>&apos;0&apos;</DefaultExpression>
+     </column>
+-    <column id="100" parent="51" name="visible">
++    <column id="102" parent="52" name="visible">
+       <Position>11</Position>
+       <DataType>int(1)|0</DataType>
+       <DefaultExpression>&apos;1&apos;</DefaultExpression>
+     </column>
+-    <column id="101" parent="51" name="carProductQuatity">
++    <column id="103" parent="52" name="carProductQuatity">
+       <Position>12</Position>
+       <DataType>int(11)|0</DataType>
+     </column>
+-    <index id="102" parent="51" name="PK__EASYBUY___94F6E55132E0915F">
++    <index id="104" parent="52" name="PK__EASYBUY___94F6E55132E0915F">
+       <ColNames>id</ColNames>
+       <Unique>1</Unique>
+     </index>
+-    <key id="103" parent="51" name="PRIMARY">
++    <key id="105" parent="52" name="PRIMARY">
+       <NameSurrogate>1</NameSurrogate>
+       <ColNames>id</ColNames>
+       <Primary>1</Primary>
+     </key>
+-    <key id="104" parent="51" name="PK__EASYBUY___94F6E55132E0915F">
++    <key id="106" parent="52" name="PK__EASYBUY___94F6E55132E0915F">
+       <ColNames>id</ColNames>
+       <UnderlyingIndexName>PK__EASYBUY___94F6E55132E0915F</UnderlyingIndexName>
+     </key>
+-    <column id="105" parent="52" name="id">
++    <column id="107" parent="53" name="id">
+       <Position>1</Position>
+       <Comment>主键</Comment>
+       <DataType>int(10)|0</DataType>
+       <NotNull>1</NotNull>
+       <SequenceIdentity>1</SequenceIdentity>
+     </column>
+-    <column id="106" parent="52" name="name">
++    <column id="108" parent="53" name="name">
+       <Position>2</Position>
+       <Comment>名称</Comment>
+       <DataType>varchar(20)|0</DataType>
+       <NotNull>1</NotNull>
+     </column>
+-    <column id="107" parent="52" name="parentId">
++    <column id="109" parent="53" name="parentId">
+       <Position>3</Position>
+       <Comment>父级目录id</Comment>
+       <DataType>int(10)|0</DataType>
+     </column>
+-    <column id="108" parent="52" name="type">
++    <column id="110" parent="53" name="type">
+       <Position>4</Position>
+       <Comment>级别(1:一级 2：二级 3：三级)</Comment>
+       <DataType>int(11)|0</DataType>
+     </column>
+-    <column id="109" parent="52" name="iconClass">
++    <column id="111" parent="53" name="iconClass">
+       <Position>5</Position>
+       <Comment>图标</Comment>
+       <DataType>varchar(255)|0</DataType>
+     </column>
+-    <column id="110" parent="52" name="visible">
++    <column id="112" parent="53" name="visible">
+       <Position>6</Position>
+       <DataType>int(1)|0</DataType>
+       <DefaultExpression>&apos;1&apos;</DefaultExpression>
+     </column>
+-    <index id="111" parent="52" name="PK__EASYBUY___9EC2A4E236B12243">
++    <index id="113" parent="53" name="PK__EASYBUY___9EC2A4E236B12243">
+       <ColNames>id</ColNames>
+       <Unique>1</Unique>
+     </index>
+-    <key id="112" parent="52" name="PRIMARY">
++    <key id="114" parent="53" name="PRIMARY">
+       <NameSurrogate>1</NameSurrogate>
+       <ColNames>id</ColNames>
+       <Primary>1</Primary>
+     </key>
+-    <key id="113" parent="52" name="PK__EASYBUY___9EC2A4E236B12243">
++    <key id="115" parent="53" name="PK__EASYBUY___9EC2A4E236B12243">
+       <ColNames>id</ColNames>
+       <UnderlyingIndexName>PK__EASYBUY___9EC2A4E236B12243</UnderlyingIndexName>
+     </key>
+-    <column id="114" parent="53" name="id">
++    <column id="116" parent="54" name="id">
+       <Position>1</Position>
+       <Comment>主键</Comment>
+       <DataType>int(20)|0</DataType>
+       <NotNull>1</NotNull>
+       <SequenceIdentity>1</SequenceIdentity>
+     </column>
+-    <column id="115" parent="53" name="loginName">
++    <column id="117" parent="54" name="loginName">
+       <Position>2</Position>
+       <Comment>登录名</Comment>
+       <DataType>varchar(255)|0</DataType>
+       <NotNull>1</NotNull>
+     </column>
+-    <column id="116" parent="53" name="userName">
++    <column id="118" parent="54" name="userName">
+       <Position>3</Position>
+       <Comment>用户名</Comment>
+       <DataType>varchar(255)|0</DataType>
+       <NotNull>1</NotNull>
+     </column>
+-    <column id="117" parent="53" name="password">
++    <column id="119" parent="54" name="password">
+       <Position>4</Position>
+       <Comment>密码</Comment>
+       <DataType>varchar(255)|0</DataType>
+       <NotNull>1</NotNull>
+     </column>
+-    <column id="118" parent="53" name="sex">
++    <column id="120" parent="54" name="sex">
+       <Position>5</Position>
+       <Comment>性别(1:男 0：女)</Comment>
+       <DataType>char(2)|0</DataType>
+       <NotNull>1</NotNull>
+       <DefaultExpression>&apos;男&apos;</DefaultExpression>
+     </column>
+-    <column id="119" parent="53" name="identityCode">
++    <column id="121" parent="54" name="identityCode">
+       <Position>6</Position>
+       <Comment>身份证号</Comment>
+       <DataType>varchar(60)|0</DataType>
+     </column>
+-    <column id="120" parent="53" name="email">
++    <column id="122" parent="54" name="email">
+       <Position>7</Position>
+       <Comment>邮箱</Comment>
+       <DataType>varchar(80)|0</DataType>
+     </column>
+-    <column id="121" parent="53" name="mobile">
++    <column id="123" parent="54" name="mobile">
+       <Position>8</Position>
+       <Comment>手机</Comment>
+       <DataType>varchar(11)|0</DataType>
+     </column>
+-    <column id="122" parent="53" name="type">
++    <column id="124" parent="54" name="type">
+       <Position>9</Position>
+       <Comment>类型（1：后台 0:前台）</Comment>
+       <DataType>int(2)|0</DataType>
+       <DefaultExpression>&apos;0&apos;</DefaultExpression>
+     </column>
+-    <column id="123" parent="53" name="visible">
++    <column id="125" parent="54" name="visible">
+       <Position>10</Position>
+       <DataType>int(1)|0</DataType>
+       <DefaultExpression>&apos;1&apos;</DefaultExpression>
+     </column>
+-    <index id="124" parent="53" name="PK__EASYBUY___C96109CC3A81B327">
++    <index id="126" parent="54" name="PK__EASYBUY___C96109CC3A81B327">
+       <ColNames>loginName</ColNames>
+       <Unique>1</Unique>
+     </index>
+-    <key id="125" parent="53" name="PRIMARY">
++    <key id="127" parent="54" name="PRIMARY">
+       <NameSurrogate>1</NameSurrogate>
+       <ColNames>id</ColNames>
+       <Primary>1</Primary>
+     </key>
+-    <key id="126" parent="53" name="PK__EASYBUY___C96109CC3A81B327">
++    <key id="128" parent="54" name="PK__EASYBUY___C96109CC3A81B327">
+       <ColNames>loginName</ColNames>
+       <UnderlyingIndexName>PK__EASYBUY___C96109CC3A81B327</UnderlyingIndexName>
+     </key>
+-    <column id="127" parent="54" name="id">
++    <column id="129" parent="55" name="id">
+       <Position>1</Position>
+       <Comment>主键id</Comment>
+       <DataType>int(20)|0</DataType>
+       <NotNull>1</NotNull>
+       <SequenceIdentity>1</SequenceIdentity>
+     </column>
+-    <column id="128" parent="54" name="userId">
++    <column id="130" parent="55" name="userId">
+       <Position>2</Position>
+       <Comment>用户主键</Comment>
+       <DataType>int(255)|0</DataType>
+     </column>
+-    <column id="129" parent="54" name="address">
++    <column id="131" parent="55" name="address">
+       <Position>3</Position>
+       <Comment>地址</Comment>
+       <DataType>varchar(255)|0</DataType>
+     </column>
+-    <column id="130" parent="54" name="createTime">
++    <column id="132" parent="55" name="createTime">
+       <Position>4</Position>
+       <Comment>创建时间</Comment>
+       <DataType>datetime|0</DataType>
+     </column>
+-    <column id="131" parent="54" name="isDefault">
++    <column id="133" parent="55" name="isDefault">
+       <Position>5</Position>
+       <Comment>是否是默认地址（1:是 0否）</Comment>
+       <DataType>int(2)|0</DataType>
+       <DefaultExpression>&apos;0&apos;</DefaultExpression>
+     </column>
+-    <column id="132" parent="54" name="remark">
++    <column id="134" parent="55" name="remark">
+       <Position>6</Position>
+       <Comment>备注</Comment>
+       <DataType>varchar(255)|0</DataType>
+     </column>
+-    <column id="133" parent="54" name="visible">
++    <column id="135" parent="55" name="visible">
+       <Position>7</Position>
+       <DataType>int(1)|0</DataType>
+       <DefaultExpression>&apos;1&apos;</DefaultExpression>
+     </column>
+-    <key id="134" parent="54" name="PRIMARY">
++    <key id="136" parent="55" name="PRIMARY">
+       <NameSurrogate>1</NameSurrogate>
+       <ColNames>id</ColNames>
+       <Primary>1</Primary>
+     </key>
+-    <column id="135" parent="55" name="stuno">
++    <column id="137" parent="56" name="stuno">
+       <Position>1</Position>
+       <DataType>char(10)|0</DataType>
+     </column>
+-    <column id="136" parent="55" name="subjectName">
++    <column id="138" parent="56" name="subjectName">
+       <Position>2</Position>
+       <DataType>char(10)|0</DataType>
+     </column>
+-    <column id="137" parent="55" name="score">
++    <column id="139" parent="56" name="score">
+       <Position>3</Position>
+       <DataType>int(10)|0</DataType>
+     </column>
+-    <column id="138" parent="55" name="age">
++    <column id="140" parent="56" name="age">
+       <Position>4</Position>
+       <DataType>int(10)|0</DataType>
+     </column>
+Index: src/main/java/com/bdqn/ebuy/controller/BeforeProductController.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/com/bdqn/ebuy/controller/BeforeProductController.java	(date 1514194640000)
++++ src/main/java/com/bdqn/ebuy/controller/BeforeProductController.java	(revision )
+@@ -123,7 +123,7 @@
+         }
+ 
+ 
+-        return "after/after_product";
++        return "after/after_product1";
+     }
+ 
+ 
+Index: src/main/java/com/bdqn/ebuy/pojo/Order.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/com/bdqn/ebuy/pojo/Order.java	(date 1514194640000)
++++ src/main/java/com/bdqn/ebuy/pojo/Order.java	(revision )
+@@ -29,6 +29,15 @@
+     private float cost;//总消费
+     private String serialNumBer;//订单号
+     private Integer visible;//假删除 类型为1为显示 0为删除
++    private String status;
++
++    public String getStatus() {
++        return status;
++    }
++
++    public void setStatus(String status) {
++        this.status = status;
++    }
+ 
+     private List<OrderDetail> orderDetail;
+ 
+Index: src/main/java/com/bdqn/ebuy/controller/BeforeCarController.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/com/bdqn/ebuy/controller/BeforeCarController.java	(date 1514194640000)
++++ src/main/java/com/bdqn/ebuy/controller/BeforeCarController.java	(revision )
+@@ -130,6 +130,8 @@
+             return "redirect:/user/address";
+         }
+         order.setUserAddress(userAddress.getAddress());
++        //增加订单状态
++        order.setStatus("未付款");
+         Integer addOrderResult = orderService.addOrder(order);
+         model.addAttribute("order", order);
+         int orderID = order.getId();
+@@ -206,7 +208,7 @@
+                 p5_Pid="",
+                 p6_Pcat="",
+                 p7_Pdesc="",
+-                p8_Url="http://localhost:8080/ebuy/",
++                p8_Url="http://localhost:8080/ebuy/car/response.html",
+                 p9_SAF="",
+                 pa_MP="",
+                 pd_FrpId="CCB-NET-B2C",
+@@ -231,6 +233,23 @@
+         return "redirect:" + url;
+     }
+ 
++    @RequestMapping("/response.html")
++    public String responsePay(HttpServletRequest request,
++                              Model model){
++        //String p2_Order = request.getParameter("p2_Order");
++        String r6_Order = request.getParameter("r6_Order");
++        System.out.println("订单号："+r6_Order);
++        System.out.println("支付状态："+request.getParameter("r1_Code"));
++        model.addAttribute("r6_Order", r6_Order);
++        if("1".equals(request.getParameter("r1_Code"))){
++            model.addAttribute("payMessage","支付成功！");
++            orderService.updateStatusBySerialNumber(r6_Order, "已付款");
++        }else{
++            model.addAttribute("payMessage","支付失败！");
++        }
++        return "before/payResult";
++    }
++
+ 
+ 
+ }
+Index: src/main/web/WEB-INF/jsp/after/after_order.jsp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/web/WEB-INF/jsp/after/after_order.jsp	(date 1514194640000)
++++ src/main/web/WEB-INF/jsp/after/after_order.jsp	(revision )
+@@ -313,10 +313,13 @@
+                                     <strong>用户名：${order.loginName}</strong>
+                                     <strong>&nbsp;&nbsp;&nbsp;&nbsp;订单号：${order.serialNumBer}</strong>
+                                     <strong>&nbsp;&nbsp;&nbsp;&nbsp;地址：${order.userAddress}</strong>
++                                    <strong>&nbsp;&nbsp;&nbsp;&nbsp;订单状态：${order.status}</strong>
+                                     <strong>&nbsp;&nbsp;&nbsp;&nbsp;￥${order.cost}</strong>
+                                 </td>
+                                 <td>
+-                                    <button class="btn btn-danger" orderID="${order.id}" name="delOrder">删除</button>
++
++                                    <button class="btn btn-danger <c:if test="${order.status ne '已收货'}">disabled</c:if>" orderID="${order.id}" name="delOrder">删除</button>
++                                    <button class="btn btn-success <c:if test="${order.status ne '已付款'}">disabled</c:if>" orderID="${order.id}" name="sendOrder">发货</button>
+                                 </td>
+                             </tr>
+                             <tr style="color: #1d72e9">
+@@ -408,7 +411,24 @@
+     <!-- /. PAGE WRAPPER  -->
+ </div>
+ <!-- /. WRAPPER  -->
+-
++<%--订单发货--%>
++<script type="text/javascript">
++    $(function () {
++        $("button[name=sendOrder]").click(function () {
++            var orderID = $(this).attr("orderID");
++            if(confirm("确定发货？")){
++                $.get(
++                    "${pageContext.request.contextPath}/afterOrder/updateOrderStatus",
++                    {"id":orderID,"status":"已发货"},
++                    function (result) {
++                        alert(result.message);
++                        location.href = location.href;
++                    }
++                );
++            }
++        });
++    });
++</script>
+ <%--删除订单--%>
+ <script type="text/javascript">
+     $(function () {
+Index: src/main/java/com/bdqn/ebuy/utils/Comm.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/com/bdqn/ebuy/utils/Comm.java	(date 1514194640000)
++++ src/main/java/com/bdqn/ebuy/utils/Comm.java	(revision )
+@@ -32,4 +32,16 @@
+         message.put("message","已发送新密码到您的邮箱，请及时更换您自己的密码");
+         return message;
+     }
++    public static Map<String, String> paySuccess(){
++        Map<String, String> message = new HashMap<>();
++        message.put("code", "0004");
++        message.put("message","付款成功");
++        return message;
++    }
++    public static Map<String, String> payFailed(){
++        Map<String, String> message = new HashMap<>();
++        message.put("code", "0005");
++        message.put("message","付款失败");
++        return message;
++    }
+ }
+Index: src/main/java/com/bdqn/ebuy/service/order/OrderServiceImpl.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/com/bdqn/ebuy/service/order/OrderServiceImpl.java	(date 1514194640000)
++++ src/main/java/com/bdqn/ebuy/service/order/OrderServiceImpl.java	(revision )
+@@ -94,5 +94,15 @@
+         return orderMapper.findOrderByID(id);
+     }
+ 
++    @Override
++    public Integer updateStatus(Integer id, String status) {
++        return orderMapper.updateStatus(id, status);
++    }
++
++    @Override
++    public Integer updateStatusBySerialNumber(String serialNumber, String status) {
++        return orderMapper.updateStatusBySerialNumber(serialNumber,status);
++    }
++
+ 
+ }
+Index: src/main/java/com/bdqn/ebuy/dao/order/OrderMapper.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/com/bdqn/ebuy/dao/order/OrderMapper.java	(date 1514194640000)
++++ src/main/java/com/bdqn/ebuy/dao/order/OrderMapper.java	(revision )
+@@ -65,6 +65,8 @@
+                                                     @Param("serialNumber") String serialNumber);
+ 
+     Order findOrderByID(Integer id);
+-
++    Integer updateStatus(@Param("id") Integer id, @Param("status") String status);
++    Integer updateStatusBySerialNumber(@Param("serialNumber")String serialNumber,
++                                       @Param("status")String status);
+ 
+ }
+Index: src/main/java/com/bdqn/ebuy/dao/product/ProductMapper.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/com/bdqn/ebuy/dao/product/ProductMapper.java	(date 1514194640000)
++++ src/main/java/com/bdqn/ebuy/dao/product/ProductMapper.java	(revision )
+@@ -29,4 +29,5 @@
+      * @return
+      */
+     List<Product> queryProductByName(String name);
++    public Integer updateVisible(Product product);
+ }
+Index: src/main/java/com/bdqn/ebuy/service/product/ProductServiceImpl.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/com/bdqn/ebuy/service/product/ProductServiceImpl.java	(date 1514194640000)
++++ src/main/java/com/bdqn/ebuy/service/product/ProductServiceImpl.java	(revision )
+@@ -69,4 +69,9 @@
+         return pageInfo;
+     }
+ 
++    @Override
++    public Integer updateVisible(Product product) {
++        return productMapper.updateVisible(product);
++    }
++
+ }
+Index: src/main/java/com/bdqn/ebuy/utils/FlightTrainTask.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/com/bdqn/ebuy/utils/FlightTrainTask.java	(date 1514194640000)
++++ src/main/java/com/bdqn/ebuy/utils/FlightTrainTask.java	(revision )
+@@ -2,7 +2,6 @@
+ 
+ import com.bdqn.ebuy.service.userAddress.UserAddressService;
+ import org.junit.runner.RunWith;
+-import org.springframework.scheduling.annotation.Scheduled;
+ import org.springframework.stereotype.Component;
+ import org.springframework.test.context.ContextConfiguration;
+ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+@@ -16,13 +15,13 @@
+     @Resource
+     private UserAddressService userAddressService;
+ 
+-    @Scheduled(cron = "0/10 * * * * ? ") // 间隔5秒执行
++    /*@Scheduled(cron = "0/10 * * * * ? ") // 间隔5秒执行
+     public void taskCycle() {
+         int i = userAddressService.deleteUserAddressByUserId();
+         System.out.println("********************");
+         System.out.println("*数据库地址清除成功 *");
+         System.out.println("********************");
+-    }
++    }*/
+ 
+ 
+ }
+\ No newline at end of file
+Index: src/main/java/com/bdqn/ebuy/dao/product/ProductMapper.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/com/bdqn/ebuy/dao/product/ProductMapper.xml	(date 1514194640000)
++++ src/main/java/com/bdqn/ebuy/dao/product/ProductMapper.xml	(revision )
+@@ -16,6 +16,7 @@
+             <if test="product.categoryLevel3Id !=null">
+                 and categoryLevel3Id = #{product.categoryLevel3Id}
+             </if>
++            and visible = 1
+         </where>
+ 
+     </select>
+@@ -24,7 +25,7 @@
+     </select>
+ 
+     <select id="queryAllProduct" resultType="EasybuyProduct">
+-        SELECT * FROM easybuy_product WHERE visible = 1
++        SELECT * FROM easybuy_product
+     </select>
+     <update id="updateProduct" parameterType="Integer">
+         UPDATE easybuy_product
+@@ -67,16 +68,17 @@
+             <if test="categoryLevel3Id!=null">
+                 AND categoryLevel3Id = #{categoryLevel3Id}
+             </if>
++            and visible = 1
+         </where>
+     </select>
+     <select id="countAllProduct" resultType="integer">
+         SELECT COUNT(1) FROM easybuy_product WHERE visible=1
+     </select>
+     <select id="queryProductBycategoryLevel1Id" parameterType="Integer" resultType="Product">
+-        SELECT * FROM `easybuy_product` WHERE `categoryLevel1Id`=#{categoryLevel1Id}
++        SELECT * FROM `easybuy_product` WHERE `categoryLevel1Id`=#{categoryLevel1Id} and visible = 1
+     </select>
+     <update id="deleteproduct" parameterType="Integer">
+-        UPDATE easybuy_product SET visible = 0 WHERE id=#{id}
++        UPDATE easybuy_product SET visible = 0 WHERE id=#{id} and visible = 1
+     </update>
+     <insert id="queryAddProduct" parameterType="Product">
+         INSERT INTO easybuy_product
+@@ -93,6 +95,9 @@
+         1,NULL)
+     </insert>
+     <select id="queryProductByName" parameterType="String" resultType="Product">
+-        SELECT * FROM `easybuy_product` WHERE `name` LIKE CONCAT('%',#{name},'%')
++        SELECT * FROM `easybuy_product` WHERE `name` LIKE CONCAT('%',#{name},'%') and visible = 1
+     </select>
++    <update id="updateVisible" parameterType="Product">
++        UPDATE `easybuy_product` SET visible = 1  WHERE id = #{id}
++    </update>
+ </mapper>
+\ No newline at end of file
+Index: src/main/web/WEB-INF/jsp/after/after_product.jsp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/web/WEB-INF/jsp/after/after_product.jsp	(date 1514194640000)
++++ src/main/web/WEB-INF/jsp/after/after_product1.jsp	(revision )
+@@ -1,0 +1,0 @@
