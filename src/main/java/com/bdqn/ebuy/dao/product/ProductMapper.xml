@@ -16,6 +16,7 @@
             <if test="product.categoryLevel3Id !=null">
                 and categoryLevel3Id = #{product.categoryLevel3Id}
             </if>
+            and visible = 1
         </where>
 
     </select>
@@ -24,7 +25,7 @@
     </select>
 
     <select id="queryAllProduct" resultType="EasybuyProduct">
-        SELECT * FROM easybuy_product WHERE visible = 1
+        SELECT * FROM easybuy_product
     </select>
     <update id="updateProduct" parameterType="Integer">
         UPDATE easybuy_product
@@ -67,16 +68,17 @@
             <if test="categoryLevel3Id!=null">
                 AND categoryLevel3Id = #{categoryLevel3Id}
             </if>
+            and visible = 1
         </where>
     </select>
     <select id="countAllProduct" resultType="integer">
         SELECT COUNT(1) FROM easybuy_product WHERE visible=1
     </select>
     <select id="queryProductBycategoryLevel1Id" parameterType="Integer" resultType="Product">
-        SELECT * FROM `easybuy_product` WHERE `categoryLevel1Id`=#{categoryLevel1Id}
+        SELECT * FROM `easybuy_product` WHERE `categoryLevel1Id`=#{categoryLevel1Id} and visible = 1
     </select>
     <update id="deleteproduct" parameterType="Integer">
-        UPDATE easybuy_product SET visible = 0 WHERE id=#{id}
+        UPDATE easybuy_product SET visible = 0 WHERE id=#{id} and visible = 1
     </update>
     <insert id="queryAddProduct" parameterType="Product">
         INSERT INTO easybuy_product
@@ -93,6 +95,9 @@
         1,NULL)
     </insert>
     <select id="queryProductByName" parameterType="String" resultType="Product">
-        SELECT * FROM `easybuy_product` WHERE `name` LIKE CONCAT('%',#{name},'%')
+        SELECT * FROM `easybuy_product` WHERE `name` LIKE CONCAT('%',#{name},'%') and visible = 1
     </select>
+    <update id="updateVisible" parameterType="Product">
+        UPDATE `easybuy_product` SET visible = 1  WHERE id = #{id}
+    </update>
 </mapper>

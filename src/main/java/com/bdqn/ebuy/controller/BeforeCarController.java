@@ -130,6 +130,8 @@ public class BeforeCarController {
             return "redirect:/user/address";
         }
         order.setUserAddress(userAddress.getAddress());
+        //增加订单状态
+        order.setStatus("未付款");
         Integer addOrderResult = orderService.addOrder(order);
         model.addAttribute("order", order);
         int orderID = order.getId();
@@ -206,7 +208,7 @@ public class BeforeCarController {
                 p5_Pid="",
                 p6_Pcat="",
                 p7_Pdesc="",
-                p8_Url="http://localhost:8080/ebuy/",
+                p8_Url="http://localhost:8080/ebuy/car/response.html",
                 p9_SAF="",
                 pa_MP="",
                 pd_FrpId="CCB-NET-B2C",
@@ -229,6 +231,23 @@ public class BeforeCarController {
                 "&pr_NeedResponse="+pr_NeedResponse+
                 "&hmac="+hmac;
         return "redirect:" + url;
+    }
+
+    @RequestMapping("/response.html")
+    public String responsePay(HttpServletRequest request,
+                              Model model){
+        //String p2_Order = request.getParameter("p2_Order");
+        String r6_Order = request.getParameter("r6_Order");
+        System.out.println("订单号："+r6_Order);
+        System.out.println("支付状态："+request.getParameter("r1_Code"));
+        model.addAttribute("r6_Order", r6_Order);
+        if("1".equals(request.getParameter("r1_Code"))){
+            model.addAttribute("payMessage","支付成功！");
+            orderService.updateStatusBySerialNumber(r6_Order, "已付款");
+        }else{
+            model.addAttribute("payMessage","支付失败！");
+        }
+        return "before/payResult";
     }
 
 

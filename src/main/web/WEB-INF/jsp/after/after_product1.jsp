@@ -301,7 +301,7 @@
 
             <div class="row">
                 <div>
-                    <button class="btn btn-info"  name="showaddProduct">新增商品</button>
+                    <button class="btn btn-info"  name="showaddProduct">上架</button>
                     <h3 align="center" class="bg-success"><strong>商品管理</strong></h3>
                     <table class="table table-hover table-striped" style="margin-top: 10px;">
                         <tr>
@@ -309,8 +309,7 @@
                             <td align="center"><strong>商品图片</strong></td>
                             <td align="center"><strong>库存</strong></td>
                             <td align="center"><strong>价格</strong></td>
-                            <td align="center"><strong>状态</strong></td>
-                            <td align="center" colspan="3" width="20%"><strong>操作</strong></td>
+                            <td align="center" colspan="2" width="20%"><strong>操作</strong></td>
                         </tr>
                         <c:forEach items="${pageInfo.list}" var="product">
                             <tr align="center">
@@ -318,16 +317,7 @@
                                 <td><img src="${pageContext.request.contextPath}/statics/upload/${product.fileName}" alt="" height="50px" width="50px"></td>
                                 <td>${product.stock}</td>
                                 <td>${product.price}</td>
-                                <td>
-                                        <c:if test="${product.visible == 1}">
-                                            在销售
-                                        </c:if>
-                                        <c:if test="${product.visible == 0}">
-                                            已下架
-                                        </c:if>
-                                </td>
                                 <td align="center"><button class="btn btn-info" productID="${product.id}" name="showUpdateProduct">修改</button></td>
-                                <td align="center"><button class="btn btn-success" productID="${product.id}" name="showupdateVisible">上架</button></td>
                                 <td align="center"><button class="btn btn-danger" productID="${product.id}" name="showDeleteProduct" >下架</button></td>
                             </tr>
                         </c:forEach>
@@ -570,27 +560,13 @@
     $(function () {
         $("button[name=showDeleteProduct]").click(function (){
             var productID=$(this).attr("productID");
-            if (confirm("确定要下架？")) {
+            if (confirm("确定要删除？")) {
                 $.post("${pageContext.request.contextPath}/after/deleteProduct", {"id": productID}, function (data) {
                     alert(data.message);
                     location.href = location.href;
 
                 })
             }
-        })
-    })
-</script>
-<script type="text/javascript">
-    //上架
-    $(function () {
-        $("button[name=showupdateVisible]").click(function (){
-            var productID=$(this).attr("productID");
-                $.post("${pageContext.request.contextPath}/after/updateVisible", {"id": productID}, function (data) {
-                    alert(data.message);
-                    location.href = location.href;
-
-                })
-
         })
     })
 </script>

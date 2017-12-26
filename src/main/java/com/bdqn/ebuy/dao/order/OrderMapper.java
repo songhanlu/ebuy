@@ -65,6 +65,8 @@ public interface OrderMapper {
                                                     @Param("serialNumber") String serialNumber);
 
     Order findOrderByID(Integer id);
-
+    Integer updateStatus(@Param("id") Integer id, @Param("status") String status);
+    Integer updateStatusBySerialNumber(@Param("serialNumber")String serialNumber,
+                                       @Param("status")String status);
 
 }

@@ -67,7 +67,7 @@ public class AfterCommonController {
     }
     @RequestMapping("/product.html")
     public String showAfterProduct(){
-        return "after/after_product";
+        return "after/after_product1";
     }
     @RequestMapping("/news.html")
     public String showAfterNews(){

@@ -32,4 +32,16 @@ public class Comm {
         message.put("message","已发送新密码到您的邮箱，请及时更换您自己的密码");
         return message;
     }
+    public static Map<String, String> paySuccess(){
+        Map<String, String> message = new HashMap<>();
+        message.put("code", "0004");
+        message.put("message","付款成功");
+        return message;
+    }
+    public static Map<String, String> payFailed(){
+        Map<String, String> message = new HashMap<>();
+        message.put("code", "0005");
+        message.put("message","付款失败");
+        return message;
+    }
 }

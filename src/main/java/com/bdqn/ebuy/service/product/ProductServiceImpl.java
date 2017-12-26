@@ -69,4 +69,9 @@ public class ProductServiceImpl implements ProductService {
         return pageInfo;
     }
 
+    @Override
+    public Integer updateVisible(Product product) {
+        return productMapper.updateVisible(product);
+    }
+
 }

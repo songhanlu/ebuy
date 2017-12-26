@@ -123,7 +123,7 @@ public class BeforeProductController {
         }
 
 
-        return "after/after_product";
+        return "after/after_product1";
     }
 
 

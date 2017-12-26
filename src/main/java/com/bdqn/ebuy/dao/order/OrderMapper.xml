@@ -41,7 +41,7 @@
                 NOW(),
                 #{cost},
                 #{serialNumBer},
-                1);
+                1,#{status});
     </insert>
 
     <update id="updateOrderUserAddress" parameterType="Order">
@@ -122,4 +122,14 @@
         SELECT * from easybuy_order
         where id=#{id}
     </select>
+    <update id="updateStatus">
+        update `easybuy_order`
+        SET status = #{status}
+        WHERE id = #{id}
+    </update>
+    <update id="updateStatusBySerialNumber">
+        UPDATE easybuy_order
+        SET status=#{status}
+        where serialNumber=#{serialNumber}
+    </update>
 </mapper>

@@ -29,4 +29,5 @@ public interface ProductMapper {
      * @return
      */
     List<Product> queryProductByName(String name);
+    public Integer updateVisible(Product product);
 }

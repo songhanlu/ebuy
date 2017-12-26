@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
+import java.io.UnsupportedEncodingException;
 
 /**
  * Created by hp on 2017/12/19.
@@ -40,6 +41,16 @@ public class AfterOrderController {
         model.addAttribute("serialNumber", serialNumber);
         model.addAttribute("pageInfo", pageInfo);
         return "after/after_order";
+    }
+
+    @RequestMapping(value = "/updateOrderStatus",produces = {"application/json;charset=UTF-8"})
+    @ResponseBody
+    public String updateOrderStatus(Integer id, String status) throws UnsupportedEncodingException {
+        int result = orderService.updateStatus(id, new String(status.getBytes("ISO8859-1"), "UTF-8"));
+        if(result>0){
+            return JSON.toJSONString(Comm.success());
+        }
+        return JSON.toJSONString(Comm.failed());
     }
 
 }

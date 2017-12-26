@@ -211,4 +211,15 @@ public class AfterProductController {
         }
         return JSON.toJSONString(Comm.failed());
     }
+
+    @ResponseBody
+    @RequestMapping(value = "/updateVisible",method = RequestMethod.POST,
+            produces = {"application/json;charset=UTF-8"})
+    public String updateVisible(Product product) {
+        int n = productService.updateVisible(product);
+        if (n > 0) {
+            return JSON.toJSONString(Comm.success());
+        }
+        return JSON.toJSONString(Comm.failed());
+    }
 }

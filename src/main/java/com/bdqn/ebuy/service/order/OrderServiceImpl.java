@@ -94,5 +94,15 @@ public class OrderServiceImpl implements OrderService {
         return orderMapper.findOrderByID(id);
     }
 
+    @Override
+    public Integer updateStatus(Integer id, String status) {
+        return orderMapper.updateStatus(id, status);
+    }
+
+    @Override
+    public Integer updateStatusBySerialNumber(String serialNumber, String status) {
+        return orderMapper.updateStatusBySerialNumber(serialNumber,status);
+    }
+
 
 }

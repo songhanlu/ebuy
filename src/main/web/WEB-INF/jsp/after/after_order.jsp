@@ -313,10 +313,13 @@
                                     <strong>用户名：${order.loginName}</strong>
                                     <strong>&nbsp;&nbsp;&nbsp;&nbsp;订单号：${order.serialNumBer}</strong>
                                     <strong>&nbsp;&nbsp;&nbsp;&nbsp;地址：${order.userAddress}</strong>
+                                    <strong>&nbsp;&nbsp;&nbsp;&nbsp;订单状态：${order.status}</strong>
                                     <strong>&nbsp;&nbsp;&nbsp;&nbsp;￥${order.cost}</strong>
                                 </td>
                                 <td>
-                                    <button class="btn btn-danger" orderID="${order.id}" name="delOrder">删除</button>
+
+                                    <button class="btn btn-danger <c:if test="${order.status ne '已收货'}">disabled</c:if>" orderID="${order.id}" name="delOrder">删除</button>
+                                    <button class="btn btn-success <c:if test="${order.status ne '已付款'}">disabled</c:if>" orderID="${order.id}" name="sendOrder">发货</button>
                                 </td>
                             </tr>
                             <tr style="color: #1d72e9">
@@ -408,7 +411,24 @@
     <!-- /. PAGE WRAPPER  -->
 </div>
 <!-- /. WRAPPER  -->
-
+<%--订单发货--%>
+<script type="text/javascript">
+    $(function () {
+        $("button[name=sendOrder]").click(function () {
+            var orderID = $(this).attr("orderID");
+            if(confirm("确定发货？")){
+                $.get(
+                    "${pageContext.request.contextPath}/afterOrder/updateOrderStatus",
+                    {"id":orderID,"status":"已发货"},
+                    function (result) {
+                        alert(result.message);
+                        location.href = location.href;
+                    }
+                );
+            }
+        });
+    });
+</script>
 <%--删除订单--%>
 <script type="text/javascript">
     $(function () {

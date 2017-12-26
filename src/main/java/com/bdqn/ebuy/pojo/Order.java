@@ -29,6 +29,15 @@ public class Order {
     private float cost;//总消费
     private String serialNumBer;//订单号
     private Integer visible;//假删除 类型为1为显示 0为删除
+    private String status;
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
     private List<OrderDetail> orderDetail;
 

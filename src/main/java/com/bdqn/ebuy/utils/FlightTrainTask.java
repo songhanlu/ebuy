@@ -2,7 +2,6 @@ package com.bdqn.ebuy.utils;
 
 import com.bdqn.ebuy.service.userAddress.UserAddressService;
 import org.junit.runner.RunWith;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -16,13 +15,13 @@ public class FlightTrainTask {
     @Resource
     private UserAddressService userAddressService;
 
-    @Scheduled(cron = "0/10 * * * * ? ") // 间隔5秒执行
+    /*@Scheduled(cron = "0/10 * * * * ? ") // 间隔5秒执行
     public void taskCycle() {
         int i = userAddressService.deleteUserAddressByUserId();
         System.out.println("********************");
         System.out.println("*数据库地址清除成功 *");
         System.out.println("********************");
-    }
+    }*/
 
 
 }

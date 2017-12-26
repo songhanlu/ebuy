@@ -28,4 +28,5 @@ public interface ProductService {
      * @return
      */
     PageInfo<Product> queryProductByName(Integer pageNum,Integer pageSize,String name);
+    public Integer updateVisible(Product product);
 }
