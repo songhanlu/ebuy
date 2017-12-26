@@ -8,7 +8,7 @@ import java.util.Map;
  */
 public class Comm {
     public final static String CUR_USER = "cur_user";
-    private int i = 1;
+
     public static Map<String, String> success(){
         Map<String, String> message = new HashMap<>();
         message.put("code", "0000");
