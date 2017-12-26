@@ -13,7 +13,7 @@
     <script type="text/javascript" src="${pageContext.request.contextPath}/statics/js/test.js"></script>
 </head>
 <body>
-    <form action=""
+    <form action="">1</form>
     <button id="btn" onclick="check();">提交</button>
     <script type="text/javascript">
 
