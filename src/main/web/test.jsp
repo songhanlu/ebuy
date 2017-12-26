@@ -13,10 +13,10 @@
     <script type="text/javascript" src="${pageContext.request.contextPath}/statics/js/test.js"></script>
 </head>
 <body>
-    <input type="text" id="name"/>
-    <button id="btn" onclick="check(${});">提交</button>
+    <form action=""
+    <button id="btn" onclick="check();">提交</button>
     <script type="text/javascript">
-        ${}
+
     </script>
 </body>
 </html>
